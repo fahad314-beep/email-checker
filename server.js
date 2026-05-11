@@ -1,3 +1,4 @@
+const path = require("path");
 const https = require('https');
 const express = require('express');
 const cors = require('cors');
@@ -43,8 +44,10 @@ app.post('/check', async (req, res) => {
   res.json(results);
 });
 
-app.get('/', (req, res) => {
-  res.json({ status: 'Gmail Checker API running!' });
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
