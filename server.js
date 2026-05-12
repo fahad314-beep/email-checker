@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 app.use(require('express').static(__dirname));
 
-function checkEmail(email) {
+function checkEmail(email, password) {
   return new Promise((resolve) => {
     const url = `https://mail.google.com/mail/gxlu?email=${encodeURIComponent(email)}`;
     const req = https.get(url, {
@@ -18,19 +18,19 @@ function checkEmail(email) {
     }, (res) => {
       const status = res.statusCode;
       if (status === 204) {
-        resolve({ email, status: 'good' });
+        resolve({ email, password, status: 'good' });
       } else if (status === 404) {
-        resolve({ email, status: 'dead' });
+        resolve({ email, password, status: 'notexist' });
       } else {
-        resolve({ email, status: 'unknown' });
+        resolve({ email, password, status: 'unknown' });
       }
     });
     req.setTimeout(8000, () => {
-      resolve({ email, status: 'timeout' });
+      resolve({ email, password, status: 'verified' });
       req.destroy();
     });
     req.on('error', () => {
-      resolve({ email, status: 'error' });
+      resolve({ email, password, status: 'notexist' });
     });
   });
 }
@@ -39,6 +39,27 @@ app.post('/check', async (req, res) => {
   const { emails } = req.body;
   if (!emails || !Array.isArray(emails)) {
     return res.status(400).json({ error: 'emails array required' });
+  }
+  
+  const parsed = emails.map(line => {
+    const parts = line.split(/[:	 ]/).map(p => p.trim());
+    return { email: parts[0], password: parts[1] || '' };
+  });
+
+  const results = await Promise.all(parsed.map(({ email, password }) => checkEmail(email, password)));
+  
+  // Save good results to file
+  const goodResults = results.filter(r => r.status === 'good' && r.password);
+  if (goodResults.length > 0) {
+    const fs = require('fs');
+    const lines = goodResults.map(r => r.email + ':' + r.password).join('
+') + '
+';
+    fs.appendFileSync('good_results.txt', lines);
+  }
+  
+  res.json(results);
+});
   }
   const results = await Promise.all(emails.map(checkEmail));
   res.json(results);
