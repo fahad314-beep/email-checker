@@ -133,7 +133,7 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 </div>
 <footer>Gmail Checker &copy; Gmail Account Checker &nbsp;&middot;&nbsp; No password required &nbsp;&middot;&nbsp; Safe &amp; Fast</footer>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" style="left:50%;transform:translateX(-50%) translateY(20px);right:auto;" id="toast"></div>
 <script>
 let results={good:[],verified:[],notexist:[],remaining:[]};
 let currentTab='good';
@@ -152,7 +152,7 @@ if(optRepeat){
   const dups=[];
   allEmails.forEach(e=>{seen.has(e)?dups.push(e):seen.add(e);});
   if(dups.length>0){
-    showToast("⛔ "+dups.length+" duplicate hain! Pehle remove karo ya Repeat Detection off karo.");
+    showToast("⛔ "+dups.length+" duplicates found! Remove them or turn off Repeat Detection.");
     return;
   }
 }
