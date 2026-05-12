@@ -144,57 +144,49 @@ function setMode(el,m){document.querySelectorAll('.mode-btn').forEach(b=>b.class
 function setRoute(el,r){document.querySelectorAll('.route-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 async function startCheck(){
 const optRepeat=document.getElementById("optRepeat").checked;
+const allEmails=getEmails();
+if(!allEmails.length){showToast("Enter at least one email!");return;}
+
 if(optRepeat){
-  const allEmails=getEmails();
   const seen=new Set();
   const dups=[];
   allEmails.forEach(e=>{seen.has(e)?dups.push(e):seen.add(e);});
   if(dups.length>0){
-    showToast("⛔ "+dups.length+" duplicate emails hain! Pehle remove karo.");
+    showToast("⛔ "+dups.length+" duplicate hain! Pehle remove karo ya Repeat Detection off karo.");
     return;
   }
 }
-const allEmails=getEmails();
-const seen=new Set();
-const duplicates=[];
-const emails=allEmails.filter(e=>{
-  if(seen.has(e)){duplicates.push(e);return false;}
-  seen.add(e);return true;
-});
-const optRepeat=document.getElementById("optRepeat").checked;
-if(optRepeat && duplicates.length>0){
-  showToast("⚠ "+duplicates.length+" duplicate emails removed!");
-}
-if(!emails.length){showToast('Enter at least one email!');return;}
+
+const emails=allEmails;
 results={good:[],verified:[],notexist:[],remaining:[...emails]};
 updateStats();
-const btn=document.getElementById('startBtn');
-btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Checking...';
-document.getElementById('progressWrap').style.display='block';
-document.getElementById('resultsCard').style.display='block';
+const btn=document.getElementById("startBtn");
+btn.disabled=true;btn.innerHTML="<span class=\"spinner\"></span>Checking...";
+document.getElementById("progressWrap").style.display="block";
+document.getElementById("resultsCard").style.display="block";
 showTab(currentTab);
 const bs=5;let done=0;
 for(let i=0;i<emails.length;i+=bs){
 const batch=emails.slice(i,i+bs);
 try{
-const res=await fetch('/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emails:batch})});
+const res=await fetch("/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({emails:batch})});
 const data=await res.json();
 data.forEach(r=>{
 results.remaining=results.remaining.filter(e=>e!==r.email);
-if(r.status==='valid'||r.status==='good')results.good.push(r.email);
-else if(r.status==='verified')results.verified.push(r.email);
+if(r.status==="good")results.good.push(r.email);
+else if(r.status==="verified")results.verified.push(r.email);
 else results.notexist.push(r.email);
 });
 }catch(err){batch.forEach(e=>{results.remaining=results.remaining.filter(x=>x!==e);results.notexist.push(e);});}
 done+=batch.length;
 const pct=Math.round((done/emails.length)*100);
-document.getElementById('progressFill').style.width=pct+'%';
-document.getElementById('progressPct').textContent=pct+'%';
-document.getElementById('progressText').textContent='Checked '+done+' / '+emails.length;
+document.getElementById("progressFill").style.width=pct+"%";
+document.getElementById("progressPct").textContent=pct+"%";
+document.getElementById("progressText").textContent="Checked "+done+" / "+emails.length;
 updateStats();showTab(currentTab);
 }
-btn.disabled=false;btn.innerHTML='&#9654; Start Check';
-showToast('Done! '+emails.length+' accounts checked.');
+btn.disabled=false;btn.innerHTML="&#9654; Start Check";
+showToast("Done! "+emails.length+" accounts checked.");
 }
 function updateStats(){
 document.getElementById('cGood').textContent=results.good.length;
