@@ -71,8 +71,8 @@ textarea::placeholder{color:var(--muted)}
 .empty{text-align:center;padding:40px;color:var(--muted);font-size:12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:12px;color:var(--accent);z-index:999;transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none}
-.toast.show{transform:translate(-50%,-50%);opacity:1}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 24px;font-size:13px;color:var(--accent);z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all}
 footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;letter-spacing:1px}
 @media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.route-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -133,7 +133,7 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 </div>
 <footer>Gmail Checker &copy; Gmail Account Checker &nbsp;&middot;&nbsp; No password required &nbsp;&middot;&nbsp; Safe &amp; Fast</footer>
 </div>
-<div class="toast" style="left:50%;transform:translateX(-50%) translateY(20px);right:auto;" id="toast"></div>
+<div class="toast" id="toast"><span id="toastMsg"></span><br><br><button onclick="document.getElementById('toast').classList.remove('show')" style="width:100%;background:none;border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;padding:4px;cursor:pointer;font-size:12px">Close ✕</button></div>
 <script>
 let results={good:[],verified:[],notexist:[],remaining:[]};
 let currentTab='good';
