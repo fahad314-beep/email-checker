@@ -1,6 +1,5 @@
 const path = require("path");
-const net = require("net");
-const dns = require("dns");
+const https = require("https");
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
@@ -10,43 +9,31 @@ app.use(express.json());
 
 function checkEmail(email) {
   return new Promise((resolve) => {
-    const domain = email.split("@")[1];
-    dns.resolveMx(domain, (err, addresses) => {
-      if (err || !addresses || addresses.length === 0) {
-        resolve({ email, status: "notexist" });
-        return;
+    const url = "https://mail.google.com/mail/gxlu?email=" + encodeURIComponent(email);
+    const options = {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept": "text/html,application/xhtml+xml",
+        "Accept-Language": "en-US,en;q=0.9"
       }
-      const mxHost = addresses[0].exchange;
-      const client = net.createConnection(25, mxHost);
-      client.setTimeout(8000);
-      let step = 0;
-      client.on("data", (data) => {
-        const response = data.toString();
-        if (step === 0 && response.includes("220")) {
-          client.write("HELO checker.com\r\n");
-          step = 1;
-        } else if (step === 1 && response.includes("250")) {
-          client.write("MAIL FROM:<test@checker.com>\r\n");
-          step = 2;
-        } else if (step === 2 && response.includes("250")) {
-          client.write("RCPT TO:<" + email + ">\r\n");
-          step = 3;
-        } else if (step === 3) {
-          if (response.includes("250")) {
-            resolve({ email, status: "good" });
-          } else {
-            resolve({ email, status: "notexist" });
-          }
-          client.destroy();
-        }
-      });
-      client.on("timeout", () => {
-        resolve({ email, status: "verified" });
-        client.destroy();
-      });
-      client.on("error", () => {
+    };
+    const req = https.get(url, options, (res) => {
+      const status = res.statusCode;
+      console.log(email + " -> " + status);
+      if (status === 204) {
+        resolve({ email, status: "good" });
+      } else if (status === 404) {
         resolve({ email, status: "notexist" });
-      });
+      } else {
+        resolve({ email, status: "verified" });
+      }
+    });
+    req.setTimeout(10000, () => {
+      resolve({ email, status: "verified" });
+      req.destroy();
+    });
+    req.on("error", () => {
+      resolve({ email, status: "notexist" });
     });
   });
 }
@@ -66,6 +53,16 @@ app.post("/check", async (req, res) => {
   const lines = results.map(r => r.email + (r.password ? ":" + r.password : "") + " [" + r.status + "]").join("\n") + "\n";
   fs.appendFileSync("checked_results.txt", lines);
   res.json(results);
+});
+
+app.get("/results", (req, res) => {
+  try {
+    const data = fs.readFileSync("checked_results.txt", "utf8");
+    res.setHeader("Content-Type", "text/plain");
+    res.send(data);
+  } catch(e) {
+    res.send("No results yet.");
+  }
 });
 
 app.use(express.static(path.join(__dirname, "public")));
