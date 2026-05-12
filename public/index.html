@@ -3,27 +3,43 @@
 <head>
     <title>Email Checker</title>
     <style>
-        body { background: #000; margin: 0; overflow: hidden; }
-        #cursor-glow {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(100,100,255,0.9) 0%, transparent 70%);
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-        }
+        body { background: #000; margin: 0; overflow: hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1; }
+        #cursor-glow { position: fixed; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(100,100,255,0.9) 0%, transparent 75%); pointer-events: none; transform: translate(-50%, -50%); z-index: 0; }
+        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; z-index: 10; width: 350px; }
+        h2 { color: white; margin-bottom: 20px; letter-spacing: 2px; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.2); color: white; margin-bottom: 15px; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #3498db; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <div id="cursor-glow"></div>
+    <canvas id="s"></canvas>
+    <div class="card">
+        <h2>CHECKER</h2>
+        <input type="text" id="e" placeholder="Enter Gmail...">
+        <button onclick="check()">CHECK NOW</button>
+    </div>
     <script>
-        const g = document.getElementById("cursor-glow");
-        document.addEventListener("mousemove", e => {
-            g.style.left = e.clientX + "px";
-            g.style.top = e.clientY + "px";
-        });
+        const g=document.getElementById("cursor-glow"),c=document.getElementById("s"),x=c.getContext("2d");let p=[];
+        function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+        window.onresize=resize;resize();
+        document.onmousemove=(e)=>{
+            g.style.left=e.clientX+"px";g.style.top=e.clientY+"px";
+            for(let i=0;i<2;i++)p.push({x:e.clientX,y:e.clientY,s:Math.random()*2,vx:Math.random()*1-0.5,vy:Math.random()*1-0.5,a:1});
+        };
+        function draw(){
+            x.clearRect(0,0,c.width,c.height);
+            p.forEach((t,i)=>{
+                t.x+=t.vx;t.y+=t.vy;t.a*=0.96;
+                x.fillStyle=`rgba(255,255,255,${t.a})`;
+                x.beginPath();x.arc(t.x,t.y,t.s,0,7);x.fill();
+                if(t.a<0.1)p.splice(i,1);
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+        function check(){ alert("Checking..."); }
     </script>
 </body>
 </html>
