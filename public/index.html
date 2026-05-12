@@ -143,6 +143,17 @@ function getEmails(){return document.getElementById('emailInput').value.split('\
 function setMode(el,m){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 function setRoute(el,r){document.querySelectorAll('.route-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 async function startCheck(){
+const optRepeat=document.getElementById("optRepeat").checked;
+if(optRepeat){
+  const allEmails=getEmails();
+  const seen=new Set();
+  const dups=[];
+  allEmails.forEach(e=>{seen.has(e)?dups.push(e):seen.add(e);});
+  if(dups.length>0){
+    showToast("⛔ "+dups.length+" duplicate emails hain! Pehle remove karo.");
+    return;
+  }
+}
 const allEmails=getEmails();
 const seen=new Set();
 const duplicates=[];
