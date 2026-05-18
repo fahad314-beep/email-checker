@@ -88,7 +88,7 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 </header>
 <div class="card">
 <div class="card-title ct-heading">Account List</div>
-<textarea id="emailInput" placeholder="Enter emails one per line&#10;example@gmail.com&#10;test@gmail.com"></textarea>
+<div style="display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg)"><div id="lineNums" style="padding:14px 8px;background:var(--surface2);color:var(--muted);font-size:12.5px;font-family:'DM Mono',monospace;line-height:1.7;text-align:right;min-width:36px;user-select:none;border-right:1px solid var(--border)">1</div><textarea id="emailInput" style="border:none;border-radius:0;flex:1" placeholder="Enter emails one per line&#10;example@gmail.com&#10;test@gmail.com"></textarea>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;margin-bottom:14px">
 <span style="font-size:11px;color:var(--muted)" id="countLabel">0 accounts</span>
 </div>
@@ -137,7 +137,13 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 <script>
 let results={good:[],verified:[],notexist:[],remaining:[]};
 let currentTab='good';
-document.getElementById('emailInput').addEventListener('input',updateCount);
+document.getElementById('emailInput').addEventListener('input',function(){
+updateCount();
+const lines=this.value.split('\n').length;
+let nums='';
+for(let i=1;i<=Math.max(lines,1);i++) nums+=i+'\n';
+document.getElementById('lineNums').textContent=nums;
+});
 function updateCount(){const e=getEmails();document.getElementById('countLabel').textContent=e.length+' accounts';}
 function getEmails(){return document.getElementById('emailInput').value.split('\n').map(e=>e.trim()).filter(e=>e&&e.includes('@'));}
 function setMode(el,m){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
