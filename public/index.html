@@ -87,22 +87,22 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 <div style="display:flex;gap:8px;align-items:center"><button onclick="setTheme('dark')" id="btn-dark" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace">🌙 Dark</button><button onclick="setTheme('light')" id="btn-light" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace">☀️ Light</button><div class="badge">FREE TOOL</div></div>
 </header>
 <div class="card">
-<div class="card-title" style="font-size:16px;font-weight:900;color:#fff">Account List</div>
+<div class="card-title ct-heading">Account List</div>
 <textarea id="emailInput" placeholder="Enter emails one per line&#10;example@gmail.com&#10;test@gmail.com"></textarea>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;margin-bottom:14px">
 <span style="font-size:11px;color:var(--muted)" id="countLabel">0 accounts</span>
 </div>
-<div class="card-title" style="font-size:16px;font-weight:900;color:#fff">Type Mode</div>
+<div class="card-title ct-heading">Type Mode</div>
 <div class="row">
 <div class="mode-btn active" onclick="setMode(this,'personal')">Personal Account Mode</div>
-<div class="mode-btn" onclick="setMode(this,'enterprise')">Enterprise / Personal Mode</div>
+
 </div>
-<div class="card-title" style="font-size:16px;font-weight:900;color:#fff">Route</div>
+<div class="card-title ct-heading">Route</div>
 <div class="route-grid">
 <div class="route-btn active" onclick="setRoute(this,'free')">Free Route</div>
 <div class="route-btn" onclick="setRoute(this,'vip1')">VIP1 Route</div>
-<div class="route-btn" onclick="setRoute(this,'vip2')">VIP2 Route</div>
-<div class="route-btn" onclick="setRoute(this,'vip3')">VIP3 Route</div>
+
+
 </div>
 <div class="row">
 <label class="chip"><input type="checkbox" id="optRepeat"> Repeat Detection</label>
@@ -133,7 +133,7 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 </div>
 <footer>Gmail Checker &copy; Gmail Account Checker &nbsp;&middot;&nbsp; No password required &nbsp;&middot;&nbsp; Safe &amp; Fast</footer>
 </div>
-<div class="toast" id="toast"><span id="toastMsg"></span><br><br><button onclick="document.getElementById('toast').classList.remove('show')" style="width:100%;background:none;border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;padding:4px;cursor:pointer;font-size:12px">Close ✕</button></div>
+<div class="toast" id="toast"><span id="toastMsg"></span><br><br><button onclick="document.getElementById('toast').classList.remove('show')" style="width:100%;background:none;border:1px solid var(--muted);color:var(--text);border-radius:6px;padding:4px;cursor:pointer;font-size:12px">Close ✕</button></div>
 <script>
 let results={good:[],verified:[],notexist:[],remaining:[]};
 let currentTab='good';
@@ -186,7 +186,7 @@ document.getElementById("progressText").textContent="Checked "+done+" / "+emails
 updateStats();showTab(currentTab);
 }
 btn.disabled=false;btn.innerHTML="&#9654; Start Check";
-showToast("Done! "+emails.length+" accounts checked.");
+
 }
 function updateStats(){
 document.getElementById('cGood').textContent=results.good.length;
@@ -226,8 +226,12 @@ t.classList.add('show');
 }
 </script>
 <div id="cursor-glow"></div><script>const g=document.getElementById("cursor-glow");document.addEventListener("mousemove",e=>{g.style.left=e.clientX+"px";g.style.top=e.clientY+"px";});document.head.insertAdjacentHTML("beforeend","<style>#cursor-glow{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(120,120,255,0.35) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:left 0.1s,top 0.1s;z-index:0;}</style>");</script><style>
-body.light{--bg:#f0f4f8;--surface:#ffffff;--surface2:#e8edf5;--border:#d0d9e8;--text:#1a2236;--muted:#7a8fa8;--accent:#0088ff;--accent2:#00d4aa}
-body.light .logo-text{background:linear-gradient(90deg,#0088ff,#00d4aa);-webkit-background-clip:text;background-clip:text}
+body.light{--bg:#f0f4f8;--surface:#ffffff;--surface2:#e8edf5;--border:#d0d9e8;--text:#1a2236;--muted:#555e6e;--accent:#0066cc;--accent2:#00a884}
+body.light .logo-text{background:linear-gradient(90deg,#0066cc,#00a884);-webkit-background-clip:text;background-clip:text}
+body.light .card-title{color:#333}
+body.light .mode-btn{color:#333;border-color:#bbc}
+body.light .route-btn{color:#333;border-color:#bbc}
+body.light .chip{color:#333;border-color:#bbc}
 body.light textarea{color:#1a2236}
 body.light .result-email{color:#1a2236}
 </style>
