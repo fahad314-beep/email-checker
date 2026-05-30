@@ -8,7 +8,7 @@ function checkEmail(email) {
     
     dns.resolveMx(domain, (err, addresses) => {
       if (err || !addresses || addresses.length === 0) {
-        resolve({ email, status: '❌ Not Exit' });
+        resolve({ email: cleanEmail, status: '❌ Not Exit' });
         return;
       }
       
@@ -33,21 +33,21 @@ function checkEmail(email) {
           step = 3;
         } else if (step === 3) {
           if (response.includes('250')) {
-            resolve({ email, status: '✅ Good' });
+            resolve({ email: cleanEmail, status: '✅ Good' });
           } else {
-            resolve({ email, status: '❌ Not Exit' });
+            resolve({ email: cleanEmail, status: '❌ Not Exit' });
           }
           client.destroy();
         }
       });
       
       client.on('timeout', () => {
-        resolve({ email, status: '⚠️ Verified' });
+        resolve({ email: cleanEmail, status: '⚠️ Verified' });
         client.destroy();
       });
       
       client.on('error', () => {
-        resolve({ email, status: '❌ Not Exit' });
+        resolve({ email: cleanEmail, status: '❌ Not Exit' });
       });
     });
   });
