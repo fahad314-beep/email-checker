@@ -4,7 +4,7 @@ const fs = require('fs');
 
 function checkEmail(rawLine) {
   return new Promise((resolve) => {
-    const email = rawLine.split(/[:| ]/)[0].trim();
+    const email = rawLine.split(/[:	| 	]/)[0].trim();
     const domain = email.split('@')[1];
     
     if (!domain) { resolve({ email, status: 'Not Exit' }); return; }
