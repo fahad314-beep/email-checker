@@ -169,7 +169,7 @@ const bs=5;let done=0;
 for(let i=0;i<emails.length;i+=bs){
 const batch=emails.slice(i,i+bs);
 try{
-const res=await fetch("/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({emails:batch})});
+const res=await fetch("https://probable-palm-tree-7794g7r7gqgv3r949-3000.app.github.dev/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({emails:batch})});
 const data=await res.json();
 data.forEach(r=>{
 results.remaining=results.remaining.filter(e=>e!==r.email);
