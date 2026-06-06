@@ -296,7 +296,7 @@ var patterns=[/\b(\d{4,8})\b/g,/code[:\s]+([\d]{4,8})/gi,/otp[:\s]+([\d]{4,8})/g
 patterns.forEach(function(p){var m;p.lastIndex=0;while((m=p.exec(text))!==null){var c=m[1]||m[0];if(!seen.has(c)){seen.add(c);codes.push(c);}}});
 var container=document.getElementById("tfaResults");
 if(!codes.length){container.innerHTML='<p style="color:var(--muted)">No codes found.</p>';return;}
-container.innerHTML='<div class="card-title" style="margin-bottom:12px">Found '+codes.length+' Code(s)</div>'+codes.map(function(c){return '<div class="result-item good" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:18px;font-weight:700;letter-spacing:4px">'+c+'</span><button onclick="navigator.clipboard.writeText(''+c+'')" style="padding:4px 12px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer">Copy</button></div>';}).join("");
+container.innerHTML='<div class="card-title" style="margin-bottom:12px">Found '+codes.length+' Code(s)</div>'+codes.map(function(c){return '<div class="result-item good" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:18px;font-weight:700;letter-spacing:4px">'+c+'</span><button onclick="navigator.clipboard.writeText(c)" style="padding:4px 12px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer">Copy</button></div>';}).join("");
 }
 
 </script>
