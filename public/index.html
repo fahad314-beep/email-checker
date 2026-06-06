@@ -75,18 +75,39 @@ textarea::placeholder{color:var(--muted)}
 .toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all}
 footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;letter-spacing:1px}
 @media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.route-grid{grid-template-columns:repeat(2,1fr)}}
+
+.sidebar{position:fixed;left:0;top:0;height:100vh;width:220px;background:var(--surface);border-right:1px solid var(--border);z-index:100;padding:20px 0;transform:translateX(-220px);transition:transform 0.3s}
+.sidebar.open{transform:translateX(0)}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;display:none}
+.sidebar-overlay.open{display:block}
+.sidebar-item{display:flex;align-items:center;gap:12px;padding:12px 20px;cursor:pointer;transition:all 0.2s;color:var(--muted);font-size:13px;font-family:'DM Mono',monospace;border-left:3px solid transparent}
+.sidebar-item:hover{background:var(--surface2);color:var(--text)}
+.sidebar-item.active{background:var(--surface2);color:var(--accent);border-left-color:var(--accent)}
+.menu-btn{background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;color:var(--text);font-size:22px}
+.coming-soon{font-size:9px;background:var(--accent2);color:#fff;padding:2px 6px;border-radius:4px;margin-left:auto}
 </style>
 </head>
 <body onload="setTheme('light')">
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="sidebar" id="sidebar">
+<div style="padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:10px">
+<div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Gmail Checker</div>
+<div style="font-size:10px;color:var(--muted)">Tool Suite</div>
+</div>
+<div class="sidebar-item active" onclick="showTool(this,'checker')"><span>✉️</span> Gmail Checker</div>
+<div class="sidebar-item" onclick="showTool(this,'2fa')"><span>🔐</span> 2FA Extractor</div>
+<div class="sidebar-item" onclick="showTool(this,'extractor')"><span>📋</span> Email Extractor <span class="coming-soon">SOON</span></div>
+<div class="sidebar-item" onclick="showTool(this,'dotrick')"><span>✨</span> Dot Trick <span class="coming-soon">SOON</span></div>
+</div>
 <div class="container">
 <header>
-<div class="logo">
+<button class="menu-btn" onclick="toggleSidebar()">☰</button><div class="logo">
 <div class="logo-text">Gmail Checker</div>
 <div class="logo-sub">Gmail Account Checker</div>
 </div>
 <div style="display:flex;gap:8px;align-items:center"><button onclick="setTheme('dark')" id="btn-dark" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace">🌙 Dark</button><button onclick="setTheme('light')" id="btn-light" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace">☀️ Light</button><a href="https://t.me/SteveSmith493" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;background:#229ED9;color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:'DM Mono',monospace"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></path></svg> Telegram</a><div class="badge">FREE TOOL</div></div>
 </header>
-<div class="card">
+<div id="tool-checker"><div class="card">
 <div class="card-title ct-heading">Account List</div>
 <textarea id="emailInput" placeholder="Enter emails one per line&#10;example@gmail.com&#10;test@gmail.com"></textarea>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;margin-bottom:14px">
@@ -130,6 +151,19 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 <button class="copy-btn" onclick="copyList()">Copy List</button>
 </div>
 <div class="results-list" id="resultsList"><div class="empty">No results yet</div></div>
+</div>
+</div>
+<div id="tool-2fa" style="display:none;margin-top:20px">
+<div class="card">
+<div class="card-title">2FA Code Extractor</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:16px">Paste SMS or text containing 2FA codes.</p>
+<textarea class="input-area" id="tfaInput" placeholder="Paste text with 2FA codes here..."></textarea>
+<div style="margin-top:16px;display:flex;gap:10px">
+<button class="btn-primary" onclick="extract2FA()">Extract Codes</button>
+<button class="btn-sec" onclick="document.getElementById('tfaInput').value='';document.getElementById('tfaResults').innerHTML=''">Clear</button>
+</div>
+<div id="tfaResults" style="margin-top:16px"></div>
+</div>
 </div>
 <footer>Gmail Checker &copy; Gmail Account Checker &nbsp;&middot;&nbsp; No password required &nbsp;&middot;&nbsp; Safe &amp; Fast</footer>
 </div>
@@ -241,6 +275,30 @@ function setTheme(t){
   document.getElementById("btn-dark").style.borderColor=t==="dark"?"var(--accent)":"var(--border)";
   document.getElementById("btn-light").style.borderColor=t==="light"?"var(--accent)":"var(--border)";
 }
+
+function toggleSidebar(){
+document.getElementById("sidebar").classList.toggle("open");
+document.getElementById("sidebarOverlay").classList.toggle("open");
+}
+function showTool(el,tool){
+document.getElementById("tool-checker").style.display=tool==="checker"?"block":"none";
+document.getElementById("tool-2fa").style.display=tool==="2fa"?"block":"none";
+document.querySelectorAll(".sidebar-item").forEach(i=>i.classList.remove("active"));
+el.classList.add("active");
+if(window.innerWidth<768)toggleSidebar();
+}
+function extract2FA(){
+var text=document.getElementById("tfaInput").value;
+if(!text.trim())return;
+var codes=[];
+var seen=new Set();
+var patterns=[/\b(\d{4,8})\b/g,/code[:\s]+([\d]{4,8})/gi,/otp[:\s]+([\d]{4,8})/gi];
+patterns.forEach(function(p){var m;p.lastIndex=0;while((m=p.exec(text))!==null){var c=m[1]||m[0];if(!seen.has(c)){seen.add(c);codes.push(c);}}});
+var container=document.getElementById("tfaResults");
+if(!codes.length){container.innerHTML='<p style="color:var(--muted)">No codes found.</p>';return;}
+container.innerHTML='<div class="card-title" style="margin-bottom:12px">Found '+codes.length+' Code(s)</div>'+codes.map(function(c){return '<div class="result-item good" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:18px;font-weight:700;letter-spacing:4px">'+c+'</span><button onclick="navigator.clipboard.writeText(''+c+'')" style="padding:4px 12px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer">Copy</button></div>';}).join("");
+}
+
 </script>
 </body>
 </html>

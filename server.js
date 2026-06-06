@@ -5,38 +5,18 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const app = express();
-app.use(cors());
+app.use(cors({origin: "*"}));
 app.use(express.json());
 
-function checkEmail(rawLine) {
-  return new Promise((resolve) => {
-    const email = rawLine.split(/[:	 |]/)[0].trim();
-    const domain = email.split("@")[1];
-    if (!domain) { resolve({ email, status: "notexist" }); return; }
-    dns.resolveMx(domain, (err, addresses) => {
-      if (err || !addresses || addresses.length === 0) {
-        resolve({ email, status: "notexist" });
-        return;
-      }
-      const mxHost = addresses.sort((a,b) => a.priority - b.priority)[0].exchange;
-      const client = net.createConnection(25, mxHost);
-      client.setTimeout(10000);
-      let step = 0;
-      let resolved = false;
-      function done(status) {
-        if (!resolved) { resolved = true; resolve({ email, status }); client.destroy(); }
-      }
-      client.on("data", (data) => {
-        const r = data.toString();
-        if (step === 0 && r.includes("220")) { client.write("HELO checker.com\r\n"); step = 1; }
-        else if (step === 1 && r.includes("250")) { client.write("MAIL FROM:<test@checker.com>\r\n"); step = 2; }
-        else if (step === 2 && r.includes("250")) { client.write("RCPT TO:<" + email + ">\r\n"); step = 3; }
-        else if (step === 3) { done(r.includes("250") ? "good" : "notexist"); }
-      });
-      client.on("timeout", () => done("verified"));
-      client.on("error", () => done("verified"));
+async function checkEmail(email) {
+  try {
+    const res = await fetch('https://mail.google.com/mail/gxlu?email=' + encodeURIComponent(email), {
+      method: 'GET', headers: {'User-Agent': 'Mozilla/5.0 Chrome/120.0.0.0'}, redirect: 'manual'
     });
-  });
+    if (res.status === 204) return { email, status: 'good' };
+    if (res.status === 404) return { email, status: 'notexist' };
+    return { email, status: 'verified' };
+  } catch(e) { return { email, status: 'verified' }; }
 }
 
 app.post("/check", async (req, res) => {
