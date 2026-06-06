@@ -270,7 +270,7 @@ body.light textarea{color:#1a2236}
 body.light .result-email{color:#1a2236}
 </style>
 <script>
-function setTheme(t){
+function setTheme(t){document.body.className=t;
   document.body.className=t;
   document.getElementById("btn-dark").style.borderColor=t==="dark"?"var(--accent)":"var(--border)";
   document.getElementById("btn-light").style.borderColor=t==="light"?"var(--accent)":"var(--border)";
