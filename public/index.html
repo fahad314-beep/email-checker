@@ -1,373 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gmail Checker - Gmail Checker</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2236;--border:#1e2d45;--accent:#00d4aa;--accent2:#0088ff;--danger:#ff4757;--warn:#ffa502;--text:#e8edf5;--muted:#5a7094}
-body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,170,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-.container{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:20px}
-header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 30px;border-bottom:1px solid var(--border);margin-bottom:30px}
-.logo-text{font-family:Syne,sans-serif;font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.badge{font-size:11px;color:var(--accent);border:1px solid rgba(0,212,170,.3);padding:4px 12px;border-radius:20px;background:rgba(0,212,170,.05)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5}
-.card-title{font-family:Syne,sans-serif;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
-textarea{width:100%;height:180px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Mono',monospace;font-size:12.5px;padding:14px;resize:vertical;outline:none;transition:border-color .2s;line-height:1.7}
-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,.08)}
-textarea::placeholder{color:var(--muted)}
-.row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
-.mode-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s;font-family:'DM Mono',monospace;text-align:center}
-.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,170,.07)}
-.route-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.route-btn{padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s;font-family:'DM Mono',monospace;text-align:center}
-.route-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(0,136,255,.07)}
-.chip{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11.5px;cursor:pointer;transition:all .2s;font-family:'DM Mono',monospace}
-.chip:hover{border-color:var(--accent);color:var(--text)}
-.chip input{accent-color:var(--accent);width:13px;height:13px}
-.btn-primary{flex:1;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:Syne,sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(0,212,170,.25)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-sec{padding:13px 20px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;transition:all .2s}
-.btn-sec:hover{border-color:var(--danger);color:var(--danger)}
-.progress-wrap{margin-top:16px;display:none}
-.progress-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
-.progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .3s;width:0}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
-.stat:hover{transform:translateY(-2px)}
-.stat.active{border-color:currentColor}
-.stat[data-t="good"]{color:#00d4aa}.stat[data-t="good"].active{background:rgba(0,212,170,.05)}
-.stat[data-t="verified"]{color:#0088ff}.stat[data-t="verified"].active{background:rgba(0,136,255,.05)}
-.stat[data-t="notexist"]{color:#ff4757}.stat[data-t="notexist"].active{background:rgba(255,71,87,.05)}
-.stat[data-t="remaining"]{color:#ffa502}.stat[data-t="remaining"].active{background:rgba(255,165,2,.05)}
-.stat-num{font-family:Syne,sans-serif;font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
-.stat-label{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:2px}
-.results-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:none}
-.results-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface2)}
-.results-title{font-family:Syne,sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
-.copy-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s}
-.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
-.results-list{max-height:320px;overflow-y:auto;padding:12px}
-.result-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:7px;margin-bottom:4px;font-size:12px;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}
-.result-item.good{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.15)}
-.result-item.verified{background:rgba(0,136,255,.07);border:1px solid rgba(0,136,255,.15)}
-.result-item.notexist{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.15)}
-.result-item.remaining{background:rgba(255,165,2,.07);border:1px solid rgba(255,165,2,.15)}
-.result-email{color:var(--text)}
-.result-badge{font-size:10px;padding:2px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:1px}
-.result-item.good .result-badge{background:rgba(0,212,170,.15);color:#00d4aa}
-.result-item.verified .result-badge{background:rgba(0,136,255,.15);color:#0088ff}
-.result-item.notexist .result-badge{background:rgba(255,71,87,.15);color:#ff4757}
-.result-item.remaining .result-badge{background:rgba(255,165,2,.15);color:#ffa502}
-.empty{text-align:center;padding:40px;color:var(--muted);font-size:12px}
-@keyframes spin{to{transform:rotate(360deg)}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 24px;font-size:13px;color:var(--accent);z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
-.toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all}
-footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;letter-spacing:1px}
-@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.route-grid{grid-template-columns:repeat(2,1fr)}
-
-.sidebar{position:fixed;left:0;top:0;height:100vh;width:220px;background:var(--surface);border-right:1px solid var(--border);z-index:100;padding:20px 0;transform:translateX(-220px);transition:transform 0.3s}
-.sidebar.open{transform:translateX(0)}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;display:none}
-.sidebar-overlay.open{display:block}
-.sidebar-item{display:flex;align-items:center;gap:12px;padding:12px 20px;cursor:pointer;transition:all 0.2s;color:var(--muted);font-size:13px;font-family:'DM Mono',monospace;border-left:3px solid transparent}
-.sidebar-item:hover{background:var(--surface2);color:var(--text)}
-.sidebar-item.active{background:var(--surface2);color:var(--accent);border-left-color:var(--accent)}
-.menu-btn{background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;color:var(--text);font-size:22px}
-.coming-soon{font-size:9px;background:var(--accent2);color:#fff;padding:2px 6px;border-radius:4px;margin-left:auto}
-</style>
+    <title>Gmail Checker</title>
+    <style>
+        body.dark { background: #1a1a1a; color: white; }
+        body.light { background: #f0f0f0; color: black; }
+        .sidebar { display: none; }
+        .sidebar.active { display: block; }
+    </style>
+    <script>
+        function setTheme(theme) {
+            document.body.className = theme;
+        }
+        
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setTheme('dark');
+        });
+    </script>
 </head>
-<body onload="setTheme('light')">
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-<div class="sidebar" id="sidebar">
-<div style="padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:10px">
-<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Gmail Checker</div>
-<div style="font-size:10px;color:var(--muted)">Tool Suite</div>
-</div>
-<div class="sidebar-item active" onclick="showTool(this,'checker')"><span>✉️</span> Gmail Checker</div>
-<div class="sidebar-item" onclick="showTool(this,'2fa')"><span>🔐</span> 2FA Extractor</div>
-
-
-</div>
-<div class="container">
-<header>
-<button class="menu-btn" onclick="toggleSidebar()">☰</button><div class="logo">
-<div class="logo-text">Gmail Checker</div>
-<div class="logo-sub">Gmail Account Checker</div>
-</div>
-<div style="display:flex;gap:8px;align-items:center"><button onclick="setTheme('dark')" id="btn-dark" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace">🌙 Dark</button><button onclick="setTheme('light')" id="btn-light" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace">☀️ Light</button><a href="https://t.me/SteveSmith493" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;background:#229ED9;color:#fff;text-decoration:none;font-size:13px;font-weight:600;font-family:'DM Mono',monospace"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></path></svg> Telegram</a><div class="badge">FREE TOOL</div></div>
-</header>
-<div id="tool-checker"><div class="card">
-<div class="card-title ct-heading">Account List</div>
-<textarea id="emailInput" placeholder="Enter emails one per line&#10;example@gmail.com&#10;test@gmail.com"></textarea>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;margin-bottom:14px">
-<span style="font-size:11px;color:var(--muted)" id="countLabel">0 accounts</span>
-</div>
-<div class="card-title ct-heading">Type Mode</div>
-<div class="row">
-<div class="mode-btn active" onclick="setMode(this,'personal')">Personal Account Mode</div>
-
-</div>
-<div class="card-title ct-heading">Route</div>
-<div class="route-grid">
-<div class="route-btn active" onclick="setRoute(this,'free')">Free Route</div>
-<div class="route-btn" onclick="setRoute(this,'vip1')">VIP1 Route</div>
-
-
-</div>
-<div class="row">
-<label class="chip"><input type="checkbox" id="optRepeat"> Repeat Detection</label>
-<label class="chip"><input type="checkbox" id="optIgnore" checked> Ignore Format Errors</label>
-<label class="chip"><input type="checkbox" id="optExists"> Check if Exists</label>
-</div>
-<div class="row" style="margin-top:16px">
-<button class="btn-primary" id="startBtn" onclick="startCheck()">&#9654; Start Check</button>
-<button class="btn-sec" onclick="clearAll()">&#x2715; Clear</button>
-</div>
-<div class="progress-wrap" id="progressWrap">
-<div class="progress-info"><span id="progressText">Checking...</span><span id="progressPct">0%</span></div>
-<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-</div>
-</div>
-<div class="stats-grid">
-<div class="stat active" data-t="good" onclick="showTab('good')"><div class="stat-num" id="cGood">0</div><div class="stat-label">Good</div></div>
-<div class="stat" data-t="verified" onclick="showTab('verified')"><div class="stat-num" id="cVerified">0</div><div class="stat-label">Verified</div></div>
-<div class="stat" data-t="notexist" onclick="showTab('notexist')"><div class="stat-num" id="cNotExist">0</div><div class="stat-label">Not Exist</div></div>
-<div class="stat" data-t="remaining" onclick="showTab('remaining')"><div class="stat-num" id="cRemaining">0</div><div class="stat-label">Remaining</div></div>
-</div>
-<div class="results-card" id="resultsCard">
-<div class="results-header">
-<div class="results-title" id="resultsTitle">Good List</div>
-<button class="copy-btn" onclick="copyList()">Copy List</button>
-</div>
-<div class="results-list" id="resultsList"><div class="empty">No results yet</div></div>
-</div>
-</div>
-<div id="tool-2fa" style="display:none;margin-top:20px">
-<div class="card" style="margin-bottom:16px">
-<div class="card-title">2FA Secret</div>
-<textarea class="input-area" id="tfaInput" placeholder="BK5V TVQ7 D2RB XXXX&#10;email@gmail.com|JBSWY3DPEHPK3PXP&#10;One secret per line..."></textarea>
-<div style="margin-top:12px;display:flex;gap:10px">
-<button class="btn-primary" onclick="startTFA()">Submit</button>
-<button class="btn-sec" onclick="stopTFA();document.getElementById('tfaInput').value='';document.getElementById('tfaCodeBox').value=''">Clear</button>
-</div>
-</div>
-<div class="card">
-<div class="card-title">2FA Code</div>
-<textarea class="input-area" id="tfaCodeBox" placeholder="ABC|2FA Code" readonly style="height:120px"></textarea>
-<div style="margin-top:12px;display:flex;gap:10px">
-<button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('tfaCodeBox').value)">Copy</button>
-<button class="btn-sec" onclick="stopTFA()">Stop</button>
-</div>
-</div>
-<div id="tfaResults"></div>
-</div>
-<footer>Gmail Checker &copy; Gmail Account Checker &nbsp;&middot;&nbsp; No password required &nbsp;&middot;&nbsp; Safe &amp; Fast</footer>
-</div>
-<div class="toast" id="toast"><span id="toastMsg"></span><br><br><button onclick="document.getElementById('toast').classList.remove('show')" style="width:100%;background:none;border:1px solid var(--muted);color:var(--text);border-radius:6px;padding:4px;cursor:pointer;font-size:12px">Close ✕</button></div>
-<script>
-let results={good:[],verified:[],notexist:[],remaining:[]};
-let currentTab='good';
-document.getElementById('emailInput').addEventListener('input',updateCount);
-function updateCount(){const e=getEmails();document.getElementById('countLabel').textContent=e.length+' accounts';}
-function getEmails(){return document.getElementById('emailInput').value.split('\n').map(e=>e.trim()).filter(e=>e&&e.includes('@'));}
-function setMode(el,m){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
-function setRoute(el,r){document.querySelectorAll('.route-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
-async function startCheck(){
-const optRepeat=document.getElementById("optRepeat").checked;
-const allEmails=getEmails();
-if(!allEmails.length){showToast("Enter at least one email!");return;}
-
-if(optRepeat){
-  const seen=new Set();
-  const dups=[];
-  allEmails.forEach(e=>{seen.has(e)?dups.push(e):seen.add(e);});
-  if(dups.length>0){
-    showToast("⛔ "+dups.length+" duplicates found! Remove them or turn off Repeat Detection.");
-    return;
-  }
-}
-
-const emails=allEmails;
-results={good:[],verified:[],notexist:[],remaining:[...emails]};
-updateStats();
-const btn=document.getElementById("startBtn");
-btn.disabled=true;btn.innerHTML="<span class=\"spinner\"></span>Checking...";
-document.getElementById("progressWrap").style.display="block";
-document.getElementById("resultsCard").style.display="block";
-showTab(currentTab);
-const bs=5;let done=0;
-for(let i=0;i<emails.length;i+=bs){
-const batch=emails.slice(i,i+bs);
-try{
-const res=await fetch("https://probable-palm-tree-7794g7r7gqgv3r949-3000.app.github.dev/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({emails:batch})});
-const data=await res.json();
-data.forEach(r=>{
-results.remaining=results.remaining.filter(e=>e!==r.email);
-if(r.status==="good")results.good.push(r.email);
-else if(r.status==="verified")results.verified.push(r.email);
-else results.notexist.push(r.email);
-});
-}catch(err){batch.forEach(e=>{results.remaining=results.remaining.filter(x=>x!==e);results.notexist.push(e);});}
-done+=batch.length;
-const pct=Math.round((done/emails.length)*100);
-document.getElementById("progressFill").style.width=pct+"%";
-document.getElementById("progressPct").textContent=pct+"%";
-document.getElementById("progressText").textContent="Checked "+done+" / "+emails.length;
-updateStats();showTab(currentTab);
-}
-btn.disabled=false;btn.innerHTML="&#9654; Start Check";
-
-}
-function updateStats(){
-document.getElementById('cGood').textContent=results.good.length;
-document.getElementById('cVerified').textContent=results.verified.length;
-document.getElementById('cNotExist').textContent=results.notexist.length;
-document.getElementById('cRemaining').textContent=results.remaining.length;
-}
-function showTab(type){
-currentTab=type;
-document.querySelectorAll('.stat').forEach(c=>c.classList.remove('active'));
-document.querySelector('.stat[data-t="'+type+'"]').classList.add('active');
-const titles={good:'Good List',verified:'Verified List',notexist:'Not Exist List',remaining:'Remaining List'};
-document.getElementById('resultsTitle').textContent=titles[type];
-const list=results[type];
-const container=document.getElementById('resultsList');
-if(!list.length){container.innerHTML='<div class="empty">No results in this category</div>';return;}
-container.innerHTML=list.map(email=>'<div class="result-item '+type+'"><span class="result-email">'+email+'</span><span class="result-badge">'+type+'</span></div>').join('');
-}
-function copyList(){
-const list=results[currentTab];
-if(!list.length){showToast('Nothing to copy!');return;}
-navigator.clipboard.writeText(list.join('\n')).then(()=>showToast('Copied '+list.length+' emails!'));
-}
-function clearAll(){
-document.getElementById('emailInput').value='';
-results={good:[],verified:[],notexist:[],remaining:[]};
-updateStats();
-document.getElementById('resultsCard').style.display='none';
-document.getElementById('progressWrap').style.display='none';
-document.getElementById('progressFill').style.width='0%';
-updateCount();showToast('Cleared!');
-}
-function showToast(msg){
-const t=document.getElementById('toast');
-document.getElementById('toastMsg').textContent=msg;
-t.classList.add('show');
-}
-</script>
-<div id="cursor-glow"></div><script>const g=document.getElementById("cursor-glow");document.addEventListener("mousemove",e=>{g.style.left=e.clientX+"px";g.style.top=e.clientY+"px";});document.head.insertAdjacentHTML("beforeend","<style>#cursor-glow{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(120,120,255,0.35) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:left 0.1s,top 0.1s;z-index:0;}</style>");</script><style>
-body.light{--bg:#f0f4f8;--surface:#ffffff;--surface2:#e8edf5;--border:#d0d9e8;--text:#1a2236;--muted:#555e6e;--accent:#0066cc;--accent2:#00a884}
-body.light .logo-text{background:linear-gradient(90deg,#0066cc,#00a884);-webkit-background-clip:text;background-clip:text}
-body.light .card-title{color:#333}
-body.light .mode-btn{color:#333;border-color:#bbc}
-body.light .route-btn{color:#333;border-color:#bbc}
-body.light .chip{color:#333;border-color:#bbc}
-body.light textarea{color:#1a2236}
-body.light .result-email{color:#1a2236}
-</style>
-<script>
-function setTheme(theme) { document.body.className = theme; }
-  document.body.className=t;
-  document.getElementById("btn-dark").style.borderColor=t==="dark"?"var(--accent)":"var(--border)";
-  document.getElementById("btn-light").style.borderColor=t==="light"?"var(--accent)":"var(--border)";
-}
-
-
-
-}
-
-
-var tfaTimer = null;
-
-function base32Decode(s) {
-  s = s.replace(/\s/g,'').toUpperCase();
-  var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  var bits = 0, value = 0, output = [];
-  for (var i = 0; i < s.length; i++) {
-    var idx = alphabet.indexOf(s[i]);
-    if(idx === -1) continue;
-    value = (value << 5) | idx;
-    bits += 5;
-    if (bits >= 8) { output.push((value >>> (bits-8)) & 255); bits -= 8; }
-  }
-  return new Uint8Array(output);
-}
-
-async function generateTOTP(secret) {
-  try {
-    var key = base32Decode(secret);
-    var time = Math.floor(Date.now() / 1000 / 30);
-    var buf = new ArrayBuffer(8);
-    var view = new DataView(buf);
-    view.setUint32(4, time, false);
-    var cryptoKey = await crypto.subtle.importKey('raw', key, {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
-    var sig = await crypto.subtle.sign('HMAC', cryptoKey, buf);
-    var arr = new Uint8Array(sig);
-    var offset = arr[19] & 0xf;
-    var code = ((arr[offset] & 0x7f) << 24 | arr[offset+1] << 16 | arr[offset+2] << 8 | arr[offset+3]) % 1000000;
-    return String(code).padStart(6,'0');
-  } catch(e) { return 'ERROR'; }
-}
-
-async function updateTFACodes() {
-  var lines = document.getElementById('tfaInput').value.split('\n').map(s=>s.trim()).filter(s=>s);
-  if (!lines.length) return;
-  var results = [];
-  for (var i = 0; i < lines.length; i++) {
-    var parts = lines[i].split('|');
-    var prefix = parts.length > 1 ? parts[0].trim() : lines[i];
-    var secret = parts.length > 1 ? parts[1].trim() : parts[0].trim();
-    secret = secret.replace(/\s/g,'');
-    var code = await generateTOTP(secret);
-    results.push(prefix + '|' + code);
-  }
-  document.getElementById('tfaCodeBox').value = results.join('\n');
-}
-
-function startTFA() {
-  stopTFA();
-  updateTFACodes();
-  tfaTimer = setInterval(updateTFACodes, 1000);
-}
-
-function stopTFA() {
-  if (tfaTimer) { clearInterval(tfaTimer); tfaTimer = null; }
-}
-
-function toggleSidebar(){
-document.getElementById("sidebar").classList.toggle("open");
-document.getElementById("sidebarOverlay").classList.toggle("open");
-}
-function showTool(el,tool){
-document.getElementById("tool-checker").style.display=tool==="checker"?"block":"none";
-document.getElementById("tool-2fa").style.display=tool==="2fa"?"block":"none";
-document.querySelectorAll(".sidebar-item").forEach(i=>i.classList.remove("active"));
-el.classList.add("active");
-if(window.innerWidth<768)toggleSidebar();
-}
-function extract2FA(){
-var text=document.getElementById("tfaInput").value;
-if(!text.trim())return;
-var codes=[];
-var seen=new Set();
-var patterns=[/\b(\d{4,8})\b/g,/code[:\s]+([\d]{4,8})/gi,/otp[:\s]+([\d]{4,8})/gi];
-patterns.forEach(function(p){var m;p.lastIndex=0;while((m=p.exec(text))!==null){var c=m[1]||m[0];if(!seen.has(c)){seen.add(c);codes.push(c);}}});
-var container=document.getElementById("tfaResults");
-if(!codes.length){container.innerHTML='<p style="color:var(--muted)">No codes found.</p>';return;}
-container.innerHTML='<div class="card-title" style="margin-bottom:12px">Found '+codes.length+' Code(s)</div>'+codes.map(function(c){return '<div class="result-item good" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:18px;font-weight:700;letter-spacing:4px">'+c+'</span><button onclick="navigator.clipboard.writeText(c)" style="padding:4px 12px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer">Copy</button></div>';}).join("");
-}
-
-</script>
+<body>
+    <button onclick="setTheme('dark')">Dark</button>
+    <button onclick="setTheme('light')">Light</button>
+    <button onclick="toggleSidebar()">Toggle Sidebar</button>
+    <div class="sidebar">Sidebar Content</div>
+    
+    <h1>Gmail Checker</h1>
+    <textarea id="emails" placeholder="example@gmail.com"></textarea>
+    <button onclick="checkEmails()">Check</button>
+    
+    <script>
+        function checkEmails() {
+            const emails = document.getElementById('emails').value;
+            console.log('Checking:', emails);
+        }
+    </script>
 </body>
 </html>
