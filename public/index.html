@@ -96,8 +96,8 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 </div>
 <div class="sidebar-item active" onclick="showTool(this,'checker')"><span>✉️</span> Gmail Checker</div>
 <div class="sidebar-item" onclick="showTool(this,'2fa')"><span>🔐</span> 2FA Extractor</div>
-<div class="sidebar-item" onclick="showTool(this,'extractor')"><span>📋</span> Email Extractor <span class="coming-soon">SOON</span></div>
-<div class="sidebar-item" onclick="showTool(this,'dotrick')"><span>✨</span> Dot Trick <span class="coming-soon">SOON</span></div>
+
+
 </div>
 <div class="container">
 <header>
@@ -155,15 +155,16 @@ footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;l
 </div>
 <div id="tool-2fa" style="display:none;margin-top:20px">
 <div class="card">
-<div class="card-title">2FA Code Extractor</div>
-<p style="color:var(--muted);font-size:12px;margin-bottom:16px">Paste SMS or text containing 2FA codes.</p>
-<textarea class="input-area" id="tfaInput" placeholder="Paste text with 2FA codes here..."></textarea>
+<div class="card-title">2FA Secret Key</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:12px">Enter your 2FA secret keys — one per line. Live 6-digit TOTP codes will appear below.</p>
+<textarea class="input-area" id="tfaInput" placeholder="BK5V TVQ7 D2RB XXXX&#10;JBSWY3DPEHPK3PXP&#10;One secret per line..."></textarea>
 <div style="margin-top:16px;display:flex;gap:10px">
-<button class="btn-primary" onclick="extract2FA()">Extract Codes</button>
-<button class="btn-sec" onclick="document.getElementById('tfaInput').value='';document.getElementById('tfaResults').innerHTML=''">Clear</button>
+<button class="btn-primary" id="tfaStartBtn" onclick="startTFA()">⚡ Generate Codes</button>
+<button class="btn-sec" onclick="stopTFA()">Stop</button>
+<button class="btn-sec" onclick="document.getElementById('tfaInput').value='';document.getElementById('tfaResults').innerHTML='';stopTFA()">Clear</button>
+</div>
 </div>
 <div id="tfaResults" style="margin-top:16px"></div>
-</div>
 </div>
 <footer>Gmail Checker &copy; Gmail Account Checker &nbsp;&middot;&nbsp; No password required &nbsp;&middot;&nbsp; Safe &amp; Fast</footer>
 </div>
@@ -274,6 +275,77 @@ function setTheme(t){document.body.className=t;
   document.body.className=t;
   document.getElementById("btn-dark").style.borderColor=t==="dark"?"var(--accent)":"var(--border)";
   document.getElementById("btn-light").style.borderColor=t==="light"?"var(--accent)":"var(--border)";
+}
+
+
+var tfaTimer = null;
+
+function base32Decode(s) {
+  s = s.replace(/\s/g,'').toUpperCase();
+  var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  var bits = 0, value = 0, output = [];
+  for (var i = 0; i < s.length; i++) {
+    value = (value << 5) | alphabet.indexOf(s[i]);
+    bits += 5;
+    if (bits >= 8) { output.push((value >>> (bits-8)) & 255); bits -= 8; }
+  }
+  return new Uint8Array(output);
+}
+
+async function generateTOTP(secret) {
+  try {
+    var key = base32Decode(secret);
+    var time = Math.floor(Date.now() / 1000 / 30);
+    var buf = new ArrayBuffer(8);
+    var view = new DataView(buf);
+    view.setUint32(4, time, false);
+    var cryptoKey = await crypto.subtle.importKey('raw', key, {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
+    var sig = await crypto.subtle.sign('HMAC', cryptoKey, buf);
+    var arr = new Uint8Array(sig);
+    var offset = arr[19] & 0xf;
+    var code = ((arr[offset] & 0x7f) << 24 | arr[offset+1] << 16 | arr[offset+2] << 8 | arr[offset+3]) % 1000000;
+    return String(code).padStart(6,'0');
+  } catch(e) { return 'ERROR'; }
+}
+
+function getTimeLeft() {
+  return 30 - (Math.floor(Date.now()/1000) % 30);
+}
+
+async function updateTFACodes() {
+  var secrets = document.getElementById('tfaInput').value.split('\n').map(s=>s.trim().replace(/\s/g,'')).filter(s=>s);
+  if (!secrets.length) return;
+  var timeLeft = getTimeLeft();
+  var pct = (timeLeft / 30) * 100;
+  var color = timeLeft <= 5 ? '#ff4757' : timeLeft <= 10 ? '#ffa502' : '#00d4aa';
+  
+  var html = '<div class="card" style="padding:16px">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+  html += '<span style="font-size:12px;color:var(--muted)">Live TOTP Codes</span>';
+  html += '<span style="font-size:12px;color:'+color+'">Refreshes in '+timeLeft+'s</span></div>';
+  html += '<div style="height:3px;background:var(--border);border-radius:2px;margin-bottom:16px"><div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:2px;transition:width 1s linear"></div></div>';
+  
+  for (var i = 0; i < secrets.length; i++) {
+    var code = await generateTOTP(secrets[i]);
+    var shortSecret = secrets[i].length > 20 ? secrets[i].substring(0,20)+'...' : secrets[i];
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-bottom:8px">';
+    html += '<div><div style="font-size:10px;color:var(--muted);margin-bottom:2px">'+shortSecret+'</div>';
+    html += '<div style="font-size:28px;font-weight:800;letter-spacing:6px;color:'+color+';font-family:'Syne',sans-serif">'+code+'</div></div>';
+    html += '<button onclick="navigator.clipboard.writeText(''+code+'')" style="padding:8px 16px;background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:12px;font-weight:600">Copy</button>';
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('tfaResults').innerHTML = html;
+}
+
+function startTFA() {
+  stopTFA();
+  updateTFACodes();
+  tfaTimer = setInterval(updateTFACodes, 1000);
+}
+
+function stopTFA() {
+  if (tfaTimer) { clearInterval(tfaTimer); tfaTimer = null; }
 }
 
 function toggleSidebar(){
