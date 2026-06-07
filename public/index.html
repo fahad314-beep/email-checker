@@ -57,7 +57,7 @@ textarea::placeholder{color:var(--muted)}
 .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
 .results-list{max-height:320px;overflow-y:auto;padding:12px}
 .result-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:7px;margin-bottom:4px;font-size:12px;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}
 .result-item.good{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.15)}
 .result-item.verified{background:rgba(0,136,255,.07);border:1px solid rgba(0,136,255,.15)}
 .result-item.notexist{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.15)}
@@ -69,12 +69,12 @@ textarea::placeholder{color:var(--muted)}
 .result-item.notexist .result-badge{background:rgba(255,71,87,.15);color:#ff4757}
 .result-item.remaining .result-badge{background:rgba(255,165,2,.15);color:#ffa502}
 .empty{text-align:center;padding:40px;color:var(--muted);font-size:12px}
-@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 24px;font-size:13px;color:var(--accent);z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
 .toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all}
 footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:11px;letter-spacing:1px}
-@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.route-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.route-grid{grid-template-columns:repeat(2,1fr)}
 
 .sidebar{position:fixed;left:0;top:0;height:100vh;width:220px;background:var(--surface);border-right:1px solid var(--border);z-index:100;padding:20px 0;transform:translateX(-220px);transition:transform 0.3s}
 .sidebar.open{transform:translateX(0)}
@@ -277,7 +277,7 @@ body.light textarea{color:#1a2236}
 body.light .result-email{color:#1a2236}
 </style>
 <script>
-function setTheme(t){document.body.className=t;
+function setTheme(theme) { document.body.className = theme; }
   document.body.className=t;
   document.getElementById("btn-dark").style.borderColor=t==="dark"?"var(--accent)":"var(--border)";
   document.getElementById("btn-light").style.borderColor=t==="light"?"var(--accent)":"var(--border)";
