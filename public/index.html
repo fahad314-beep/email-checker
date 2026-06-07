@@ -335,7 +335,7 @@ async function runTFA(){
     var prefix=parts.length>1?parts[0].trim():lines[i];
     var secret=parts.length>1?parts[1].trim():parts[0].trim();
     var code=await totp(secret.replace(/\s/g,""));
-    out.push(code);
+    out.push(prefix+"|"+code);
   }
   document.getElementById("tfaOutput").value=out.join("\n");
 }
@@ -351,8 +351,11 @@ function stopTFA(){
 }
 
 function copyTFA(){
-  var val=document.getElementById("tfaOutput").value;
-  if(val) navigator.clipboard.writeText(val);
+  var lines=document.getElementById("tfaOutput").value.split("
+");
+  var codes=lines.map(function(l){var p=l.split("|");return p[p.length-1].trim();}).join("
+");
+  if(codes) navigator.clipboard.writeText(codes);
 }
 
 </script>
