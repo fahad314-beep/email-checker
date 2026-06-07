@@ -351,10 +351,8 @@ function stopTFA(){
 }
 
 function copyTFA(){
-  var lines=document.getElementById("tfaOutput").value.split("
-");
-  var codes=lines.map(function(l){var p=l.split("|");return p[p.length-1].trim();}).join("\n");
-  if(codes) navigator.clipboard.writeText(codes);
+  var val=document.getElementById("tfaOutput").value;
+  if(val) navigator.clipboard.writeText(val);
 }
 
 </script>
