@@ -279,8 +279,14 @@ function setTheme(t){
 }
 
 function toggleSidebar(){
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("sidebarOverlay").classList.toggle("open");
+  var s=document.getElementById("sidebar");
+  var o=document.getElementById("sidebarOverlay");
+  s.classList.toggle("open");
+  if(s.classList.contains("open")){
+    o.style.display="block";
+  } else {
+    o.style.display="none";
+  }
 }
 
 function showTool(e,tool){
